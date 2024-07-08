@@ -1,0 +1,67 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"log"
+	"strings"
+
+	"github.com/2zqa/whatsapp-markov-chat/internal/parser"
+	"github.com/mb-14/gomarkov"
+)
+
+func main() {
+
+	filepath := flag.String("file", "", "path to the WhatsApp chat export file")
+	flag.Parse()
+
+	if *filepath == "" {
+		log.Fatal("Please provide the path to the WhatsApp chat export file using the -file flag")
+	}
+
+	messages, err := parser.ParseWhatsAppChat(*filepath)
+	if err != nil {
+		log.Fatalf("Error parsing chat file: %v", err)
+	}
+
+	chain := gomarkov.NewChain(2)
+
+	for _, message := range messages {
+		chain.Add(strings.Fields(message.Message))
+	}
+
+	order := chain.Order
+	tokens := make([]string, 0)
+	for i := 0; i < order; i++ {
+		tokens = append(tokens, gomarkov.StartToken)
+	}
+
+	for {
+		fmt.Print("Press enter to generate a new message...")
+		fmt.Scanln()
+
+		for tokens[len(tokens)-1] != gomarkov.EndToken {
+			next, _ := chain.Generate(tokens[(len(tokens) - order):])
+			tokens = append(tokens, next)
+		}
+		generatedMessage := strings.Join(tokens[order:len(tokens)-1], " ")
+
+		if !isMessageInList(generatedMessage, messages) {
+			fmt.Println("NOT in message list! yay")
+		}
+
+		fmt.Println(generatedMessage)
+
+		// Reset tokens for the next iteration
+		tokens = tokens[:order]
+	}
+}
+
+func isMessageInList(message string, messages []parser.Message) bool {
+	for _, m := range messages {
+		if m.Message == message {
+			return true
+		}
+	}
+	return false
+}
