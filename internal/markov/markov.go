@@ -6,6 +6,15 @@ import (
 	"github.com/mb-14/gomarkov"
 )
 
+// CreateTokenSlice creates a slice of tokens the size of the order of the Markov chain
+func CreateTokenSlice(chain *gomarkov.Chain) (tokens []string) {
+	tokens = make([]string, 0)
+	for i := 0; i < chain.Order; i++ {
+		tokens = append(tokens, gomarkov.StartToken)
+	}
+	return
+}
+
 // Generate generates a new message based on the Markov chain
 func Generate(chain *gomarkov.Chain, tokens []string) string {
 	order := chain.Order

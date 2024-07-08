@@ -36,11 +36,7 @@ func main() {
 		chain.Add(strings.Fields(message.Message))
 	}
 
-	order := chain.Order
-	tokens := make([]string, 0)
-	for i := 0; i < order; i++ {
-		tokens = append(tokens, gomarkov.StartToken)
-	}
+	tokens := markov.CreateTokenSlice(chain)
 
 	fmt.Print("Press enter to generate a new message...")
 	var generatedMessage string
