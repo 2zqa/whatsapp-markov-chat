@@ -1,4 +1,4 @@
-package parser
+package whatsapp
 
 import (
 	"bufio"
@@ -8,13 +8,18 @@ import (
 	"time"
 )
 
+var messagePattern = regexp.MustCompile(`(\d{2}-\d{2}-\d{4} \d{2}:\d{2}) - ([^:]+): (.*)`)
+
+// Message represents a single message in a WhatsApp chat
 type Message struct {
 	Timestamp time.Time
-	Name      string
-	Message   string
+	// Name is the name of the person who sent the message
+	Name string
+	// Message is the content of the message. It may contain newlines.
+	Message string
 }
 
-func ParseWhatsAppChat(filepath string) ([]Message, error) {
+func ParseChat(filepath string) ([]Message, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
@@ -22,7 +27,6 @@ func ParseWhatsAppChat(filepath string) ([]Message, error) {
 	defer file.Close()
 
 	var messages []Message
-	messagePattern := regexp.MustCompile(`(\d{2}-\d{2}-\d{4} \d{2}:\d{2}) - ([^:]+): (.*)`)
 	scanner := bufio.NewScanner(file)
 	var currentMessage *Message
 

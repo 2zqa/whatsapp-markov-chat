@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/2zqa/whatsapp-markov-chat/internal/markov"
-	"github.com/2zqa/whatsapp-markov-chat/internal/parser"
+	"github.com/2zqa/whatsapp-markov-chat/internal/whatsapp"
 
 	"github.com/mb-14/gomarkov"
 )
@@ -25,7 +25,7 @@ func main() {
 		log.Fatal("Please provide the path to the WhatsApp chat export file using the -file flag")
 	}
 
-	messages, err := parser.ParseWhatsAppChat(*filepath)
+	messages, err := whatsapp.ParseChat(*filepath)
 	if err != nil {
 		log.Fatalf("Error parsing chat file: %v", err)
 	}
@@ -61,7 +61,7 @@ func main() {
 	}
 }
 
-func isMessageInList(message string, messages []parser.Message) bool {
+func isMessageInList(message string, messages []whatsapp.Message) bool {
 	for _, m := range messages {
 		if m.Message == message {
 			return true
