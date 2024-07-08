@@ -6,12 +6,18 @@ import (
 	"log"
 	"strings"
 
+	"github.com/2zqa/whatsapp-markov-chat/internal/markov"
 	"github.com/2zqa/whatsapp-markov-chat/internal/parser"
+
 	"github.com/mb-14/gomarkov"
 )
 
-func main() {
+const (
+	retryLimit  = 30
+	markovOrder = 2
+)
 
+func main() {
 	filepath := flag.String("file", "", "path to the WhatsApp chat export file")
 	flag.Parse()
 
@@ -24,7 +30,7 @@ func main() {
 		log.Fatalf("Error parsing chat file: %v", err)
 	}
 
-	chain := gomarkov.NewChain(2)
+	chain := gomarkov.NewChain(markovOrder)
 
 	for _, message := range messages {
 		chain.Add(strings.Fields(message.Message))
@@ -36,24 +42,22 @@ func main() {
 		tokens = append(tokens, gomarkov.StartToken)
 	}
 
+	fmt.Print("Press enter to generate a new message...")
+	var generatedMessage string
 	for {
-		fmt.Print("Press enter to generate a new message...")
 		fmt.Scanln()
-
-		for tokens[len(tokens)-1] != gomarkov.EndToken {
-			next, _ := chain.Generate(tokens[(len(tokens) - order):])
-			tokens = append(tokens, next)
+		attempts := 0
+		for {
+			generatedMessage = markov.Generate(chain, tokens)
+			if !isMessageInList(generatedMessage, messages) {
+				break
+			}
+			attempts++
+			if attempts >= retryLimit {
+				break
+			}
 		}
-		generatedMessage := strings.Join(tokens[order:len(tokens)-1], " ")
-
-		if !isMessageInList(generatedMessage, messages) {
-			fmt.Println("NOT in message list! yay")
-		}
-
 		fmt.Println(generatedMessage)
-
-		// Reset tokens for the next iteration
-		tokens = tokens[:order]
 	}
 }
 
