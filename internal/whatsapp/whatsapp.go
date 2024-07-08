@@ -14,10 +14,11 @@ var messagePattern = regexp.MustCompile(`(\d{2}-\d{2}-\d{4} \d{2}:\d{2}) - ([^:]
 
 // Message represents a single message in a WhatsApp chat
 type Message struct {
+	// Timestamp is the moment the message was sent
 	Timestamp time.Time
 	// Name is the name of the person who sent the message
 	Name string
-	// Message is the content of the message. It may contain newlines.
+	// Message is the content of the message. May contain newlines.
 	Message string
 }
 
