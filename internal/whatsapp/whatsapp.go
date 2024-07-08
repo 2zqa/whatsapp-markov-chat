@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const whatsappTimestampLayout = "02-01-2006 15:04"
+
 var messagePattern = regexp.MustCompile(`(\d{2}-\d{2}-\d{4} \d{2}:\d{2}) - ([^:]+): (.*)`)
 
 // Message represents a single message in a WhatsApp chat
@@ -26,10 +28,10 @@ func ParseChat(filepath string) ([]Message, error) {
 	}
 	defer file.Close()
 
-	var messages []Message
 	scanner := bufio.NewScanner(file)
-	var currentMessage *Message
 
+	var messages []Message
+	var currentMessage *Message
 	for scanner.Scan() {
 		line := scanner.Text()
 		match := messagePattern.FindStringSubmatch(line)
@@ -37,9 +39,9 @@ func ParseChat(filepath string) ([]Message, error) {
 			if currentMessage != nil {
 				messages = append(messages, *currentMessage)
 			}
-			timestamp, _ := time.Parse("02-01-2006 15:04", match[1])
-			name := strings.TrimSpace(match[2])
-			message := strings.TrimSpace(match[3])
+			timestamp, _ := time.Parse(whatsappTimestampLayout, match[1])
+			name := match[2]
+			message := match[3]
 			currentMessage = &Message{Timestamp: timestamp, Name: name, Message: message}
 		} else if currentMessage != nil {
 			currentMessage.Message += "\n" + strings.TrimSpace(line)
