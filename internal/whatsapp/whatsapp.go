@@ -16,8 +16,8 @@ var messagePattern = regexp.MustCompile(`(\d{2}-\d{2}-\d{4} \d{2}:\d{2}) - ([^:]
 type Message struct {
 	// Timestamp is the moment the message was sent
 	Timestamp time.Time
-	// Name is the name of the person who sent the message
-	Name string
+	// Author is the name of the person who sent the message
+	Author string
 	// Message is the content of the message. May contain newlines.
 	Message string
 }
@@ -43,7 +43,7 @@ func ParseChat(filepath string) ([]Message, error) {
 			timestamp, _ := time.Parse(whatsappTimestampLayout, match[1])
 			name := match[2]
 			message := match[3]
-			currentMessage = &Message{Timestamp: timestamp, Name: name, Message: message}
+			currentMessage = &Message{Timestamp: timestamp, Author: name, Message: message}
 		} else if currentMessage != nil {
 			currentMessage.Message += "\n" + strings.TrimSpace(line)
 		}

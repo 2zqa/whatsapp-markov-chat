@@ -7,9 +7,9 @@ import (
 )
 
 // CreateTokenSlice creates a slice of tokens the size of the order of the Markov chain
-func CreateTokenSlice(chain *gomarkov.Chain) (tokens []string) {
+func CreateTokenSlice(order int) (tokens []string) {
 	tokens = make([]string, 0)
-	for i := 0; i < chain.Order; i++ {
+	for i := 0; i < order; i++ {
 		tokens = append(tokens, gomarkov.StartToken)
 	}
 	return

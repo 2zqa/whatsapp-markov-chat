@@ -32,21 +32,35 @@ func main() {
 		log.Fatalf("Error parsing chat file: %v", err)
 	}
 
-	// Create a Markov chain
-	chain := gomarkov.NewChain(markovOrder)
-	for _, message := range messages {
-		chain.Add(strings.Fields(message.Message))
-	}
-	tokens := markov.CreateTokenSlice(chain)
+	// Create a Markov chain for every author
+	chains := createChains(messages)
+	tokens := markov.CreateTokenSlice(markovOrder)
 
 	// Main loop to generate messages
-	fmt.Print("Press enter to generate a new message...")
-	var generatedMessage string
+	fmt.Println("Press enter to generate a new message...")
 	for {
-		fmt.Scanln()
-		generatedMessage = generateUniqueMessage(chain, tokens, messages)
-		fmt.Print(generatedMessage)
+		fmt.Scanln() // Wait until the user presses enter
+		sendMessageForAllParticipants(chains, tokens, messages)
 	}
+}
+
+func sendMessageForAllParticipants(chains map[string]*gomarkov.Chain, tokens []string, messages []whatsapp.Message) {
+	for author, chain := range chains {
+		generatedMessage := generateUniqueMessage(chain, tokens, messages)
+		fmt.Print(author + ": " + generatedMessage + "\n")
+	}
+}
+
+func createChains(messages []whatsapp.Message) map[string]*gomarkov.Chain {
+	chains := make(map[string]*gomarkov.Chain)
+	for _, message := range messages {
+		author := message.Author
+		if _, ok := chains[author]; !ok {
+			chains[author] = gomarkov.NewChain(markovOrder)
+		}
+		chains[author].Add(strings.Fields(message.Message))
+	}
+	return chains
 }
 
 func isMessageInList(message string, messages []whatsapp.Message) bool {
