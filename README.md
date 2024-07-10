@@ -1,5 +1,7 @@
 # Markov chat generator for WhatsApp
 
+[![.github/workflows/release.yaml](https://github.com/2zqa/whatsapp-markov-chat/actions/workflows/release.yaml/badge.svg)](https://github.com/2zqa/whatsapp-markov-chat/actions/workflows/release.yaml)
+
 Generates messages from an exported WhatsApp chat using [Markov Chains](https://en.wikipedia.org/wiki/Markov_chain)
 
 ## Description
