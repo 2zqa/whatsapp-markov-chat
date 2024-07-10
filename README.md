@@ -27,7 +27,7 @@ The program creates a Markov chain for every participant in a chat export, train
 
 ## Help
 
-**Q:** No messages are printed!
+**Q:** No messages are printed!  
 **A:** Make sure the export is formatted correctly. If it is, please create an issue.
 
 ## License
