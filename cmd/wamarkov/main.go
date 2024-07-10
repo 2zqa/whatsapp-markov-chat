@@ -42,17 +42,7 @@ func main() {
 	var generatedMessage string
 	for {
 		fmt.Scanln()
-		attempts := 0
-		for {
-			generatedMessage = markov.Generate(chain, tokens)
-			if !isMessageInList(generatedMessage, messages) {
-				break
-			}
-			attempts++
-			if attempts >= retryLimit {
-				break
-			}
-		}
+		generatedMessage = generateUniqueMessage(chain, tokens, messages)
 		fmt.Println(generatedMessage)
 	}
 }
@@ -64,4 +54,15 @@ func isMessageInList(message string, messages []whatsapp.Message) bool {
 		}
 	}
 	return false
+}
+
+func generateUniqueMessage(chain *gomarkov.Chain, tokens []string, messages []whatsapp.Message) string {
+	var generatedMessage string
+	for i := 0; i < retryLimit; i++ {
+		generatedMessage = markov.Generate(chain, tokens)
+		if !isMessageInList(generatedMessage, messages) {
+			break
+		}
+	}
+	return generatedMessage
 }
